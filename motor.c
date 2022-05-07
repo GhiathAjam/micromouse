@@ -1,29 +1,49 @@
-
-
 // PWM for speed control
-const int HBRIDGE_EN1 = 10;
-const int HBRIDGE_EN2 = 11;
+const int HBRIDGE_EN1 = 10; //right 
+const int HBRIDGE_EN2 = 11; //left
+
 // H-Bridge pins for polarity
+// right motor
 const int HBRIDGE_IN1 = 8;
 const int HBRIDGE_IN2 = 9;
+// left motor
 const int HBRIDGE_IN3 = 12;
 const int HBRIDGE_IN4 = 13;
 
-void motor_stop()
-{
-  motor_move(0, 0);
-}
 
-void motor_forward()
-{
-  // both Motors polarity should be forward
-  digitalWrite(HBRIDGE_IN1, HIGH);
-  digitalWrite(HBRIDGE_IN2, LOW);
-  
-  digitalWrite(HBRIDGE_IN3, HIGHT);
-  digitalWrite(HBRIDGE_IN4, LOW);
-}
 
+void move_right_motor(int direction) 
+{
+  // 1 forward, 0 backward, 2 stop
+  if(direction==1){
+      digitalWrite(HBRIDGE_IN1, HIGH);
+      digitalWrite(HBRIDGE_IN2, LOW);
+  }
+  else if(direction==0){
+      digitalWrite(HBRIDGE_IN1, LOW);
+      digitalWrite(HBRIDGE_IN2, HIGH);
+  }
+  else{
+      digitalWrite(HBRIDGE_IN1, LOW);
+      digitalWrite(HBRIDGE_IN2, LOW);
+}
+void move_left_motor(int direction) 
+{
+  // 1 forward, 0 backward, 2 stop
+  if(direction==1){
+      digitalWrite(HBRIDGE_IN3, HIGH);
+      digitalWrite(HBRIDGE_IN4, LOW);
+  }
+  else if(direction==1){
+      digitalWrite(HBRIDGE_IN3, LOW);
+      digitalWrite(HBRIDGE_IN4, HIGH);
+  }
+  else{
+      digitalWrite(HBRIDGE_IN3, LOW);
+      digitalWrite(HBRIDGE_IN4, LOW);
+  }
+}
+//:)
 void motor_backward()
 { 
   // both Motors polarity should be backward
@@ -34,15 +54,37 @@ void motor_backward()
   digitalWrite(HBRIDGE_IN4, HIGH);
 }
 
-void motor_move(int left_motor_speed, int right_motor_speed)
+void motor_move(int right_motor_speed, int left_motor_speed, int direction)
 {
+  // 1 turn right, 0 turn left, 2 forward, 3 stop 
+  if(direction==1){
+    move_right_motor(0);
+    move_left_motor(1);
+  }
+  else if(direction==0){
+    move_right_motor(1);
+    move_left_motor(0);
+  }
+  else if (direction ==2){
+    move_right_motor(1);
+    move_left_motor(1);
+  }
+  else{
+    move_right_motor(2);
+    move_left_motor(2);
+  }
   // 0 <= Speed <= 255
-  analogWrite(HBRIDGE_EN1, left_motor_speed);
+  analogWrite(HBRIDGE_EN1, right_motor_speed);
   analogWrite(HBRIDGE_EN2, left_motor_speed);
+}
+void motor_stop()
+{
+  motor_move(0, 0, 3);
 }
 
 void setup()
 {
+  // may need to increase freq.
   // debugging
   Serial.begin(9600);
   // H-Bridge enable pins as PWM output
@@ -54,7 +96,7 @@ void setup()
   pinMode(HBRIDGE_IN3, OUTPUT);
   pinMode(HBRIDGE_IN4, OUTPUT);
 
-  motor_forward();
+  motor_stop();
 }
 
 void loop()
@@ -65,7 +107,7 @@ void loop()
   while (! Serial.available())
     right_motor_speed = Serial.parseInt();
   
-  motor_move(left_motor_speed, right_motor_speed);
+  motor_move(right_motor_speed, left_motor_speed, 2);
   delay(2000);
 
   motor_stop();
