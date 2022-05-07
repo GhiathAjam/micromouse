@@ -1,2 +1,2 @@
-# micromouse
-This repor containes the code for the micromouse project for embedded systems course at Facult of Engineering, Cairo University
+# Micromouse
+Micromouse project's code for embedded systems course at Faculty of Engineering, Cairo University
