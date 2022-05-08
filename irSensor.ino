@@ -8,11 +8,16 @@
 #define P_LINE_MIN 0.5   // Minimum brightness percentage to consider part of the line (=reading/100)
 
 const int SENSOR_UNO[N_SENS] = {A0, A1, A2, A3, A4}; // Arduino pins
-const int sensorsMax[N_SENS] = {0,0,0,0,0};                  // Maximum value each sensor measures
-const int sensorsMin[N_SENS] = {0,0,0,0,0};                  // Minimum value each sensor measures
+const int sensorsMax[N_SENS] = {0};                  // Maximum value each sensor measures
+const int sensorsMin[N_SENS] = {0};                  // Minimum value each sensor measures
 float linePos = 0;
 float lastLinePos = 0;
-int sensorShowsLine[] = {0, 0, 0, 0, 0};
+int sensorShowsLine = 0b00000;
+
+const float SPEED = 255;
+const float KP = .4;
+const float KD = 12;
+const float KI = 0;
 
 void setup()
 {
@@ -27,9 +32,26 @@ void loop()
 
   linePos = getLinePosition(BLACK, (lastLinePos > 0));
   lastLinePos = linePos;
+  float correction = getPIDCorrection(linePos, lastLinePos, KP, KD, KI);
+  float maxCorrection = SPEED;
+
+  if (correction > 0)
+  {
+    correction = (correction > maxCorrection) ? maxCorrection : correction;
+    int direction = linePos > 0 ? 1 : linePos < 0 ? 0
+                                                  : 2;
+    // motorspeed(SPEED,SPEED-correction,direction);
+  }
+  else
+  {
+    correction = (correction < -maxCorrection) ? -maxCorrection : correction;
+    int direction = linePos > 0 ? 1 : linePos < 0 ? 0
+                                                  : 2;
+    // motorspeed(SPEED+correction,SPEED,direction);
+  }
+
   Serial.print("line position: ");
   Serial.println(linePos);
-  delay(500);
 }
 
 void initializeCNYSensors()
@@ -54,10 +76,8 @@ float getLinePosition(int color, int lastDir)
 
   for (int i = 0; i < N_SENS; i++)
   {
-    for (int i = 0; i < 5; i++)
-    {
-      sensorShowsLine[i] = 0;
-    }
+    sensorShowsLine = 0b00000;
+    int bitmask = 0b10000;
 
     sensorsScaled[i] = analogRead(SENSOR_UNO[i]) - sensorsMin[i];
 
@@ -76,18 +96,19 @@ float getLinePosition(int color, int lastDir)
     if (sensorsScaled[i] >= (float)R_SENS * ((float)P_LINE_MIN / 100.0)) // At least one sensor has to detect a line
     {
       lineDetected = 1;
+      sensorShowsLine |= bitmask;
     }
 
     // startring point
     // TODO motor team go ahead with maximum speed
-    if (sensorShowsLine[1] && sensorShowsLine[2] && sensorShowsLine[3] && !sensorShowsLine[0] && !sensorShowsLine[4])
+    if (sensorShowsLine == 0b01110)
     {
       return 0;
     }
     // cross lines
     // TODO motor team go ahead with average speed
     // 2001 is a special case not in the range [-2000:2000]
-    if (sensorShowsLine[1] && sensorShowsLine[2] && sensorShowsLine[3] && (sensorShowsLine[0] || sensorShowsLine[4]))
+    if (sensorShowsLine == 0b11111)
     {
       return 2001;
     }
@@ -95,7 +116,6 @@ float getLinePosition(int color, int lastDir)
     wightedReadings += sensorsScaled[i] * i * WEIGHT_UNIT;
     avgReadings += sensorsScaled[i];
   }
-  
   if (lineDetected == 1)
   {
     line = wightedReadings / avgReadings;           // Weighted average 0-4000
@@ -114,4 +134,14 @@ float getLinePosition(int color, int lastDir)
   }
 
   return line;
+}
+
+void getPIDCorrection(float line, float last_line, float kp, float kd, float ki)
+{
+  float proportional = line;
+  float derivative = line - last_line;
+  float integral = line + last_line;
+
+  float correction = kp * proportional + kd * derivative + ki * integral;
+  return correction;
 }
