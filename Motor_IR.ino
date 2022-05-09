@@ -1,17 +1,17 @@
 ////////////////////  IR Sensor
 
-#define WHITE 1
-#define BLACK 0
-#define COLOR BLACK // Line color
+#define WHITE_LINE_LINE 1
+#define BLACK_LINE 0
+#define COLOR BLACK_LINE // Line color
 
-#define N_SENS 5         // Number of sensors
-#define R_SENS 1000      // Sensor readings are mapped to this range
-#define WEIGHT_UNIT 1000 // Unit for weighted average
-#define P_LINE_MIN 0.5   // Minimum brightness percentage to consider part of the line (=reading/100)
+#define NUM_OF_SENSORS 5          // Number of sensors
+#define MAPPED_RANGE_SENSORS 1000 // Sensor readings are mapped to this range
+#define WEIGHT_UNIT 1000          // Unit for weighted average
+#define BRIGHTNESS_LINE_MIN 0.5   // Minimum brightness percentage to consider part of the line (=reading/100)
 
-const int SENSOR_UNO[N_SENS] = {A0, A1, A2, A3, A4}; // Arduino pins
-const int sensorsMax[N_SENS] = {0};                  // Maximum value each sensor measures
-const int sensorsMin[N_SENS] = {0};                  // Minimum value each sensor measures
+const int SENSOR_UNO[NUM_OF_SENSORS] = {A0, A1, A2, A3, A4}; // Arduino pins
+const int sensorsMax[NUM_OF_SENSORS] = {1023};               // Maximum value each sensor measures
+const int sensorsMin[NUM_OF_SENSORS] = {0};                  // Minimum value each sensor measures
 float linePos = 0;
 float lastLinePos = 0;
 int sensorShowsLine = 0b00000;
@@ -24,8 +24,8 @@ const float KI = 0;
 ///////////////////   MOTOR
 
 // PWM for speed control
-const int HBRIDGE_EN1 = 10; //right 
-const int HBRIDGE_EN2 = 11; //left
+const int HBRIDGE_EN1 = 10; // right
+const int HBRIDGE_EN2 = 11; // left
 
 // H-Bridge pins for polarity
 // right motor
@@ -37,7 +37,8 @@ const int HBRIDGE_IN4 = 13;
 
 ////////////////////
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   initializeCNYSensors();
   // may need to increase freq.
@@ -51,12 +52,11 @@ void setup() {
   pinMode(HBRIDGE_IN4, OUTPUT);
 
   motor_stop();
-    
 }
 
-
-void loop() {
-  linePos = getLinePosition(BLACK, (lastLinePos > 0));
+void loop()
+{
+  linePos = getLinePosition(BLACK_LINE, (lastLinePos > 0));
   lastLinePos = linePos;
   float correction = getPIDCorrection(linePos, lastLinePos, KP, KD, KI);
   float maxCorrection = SPEED;
@@ -66,25 +66,25 @@ void loop() {
     correction = (correction > maxCorrection) ? maxCorrection : correction;
     int direction = linePos > 0 ? 1 : linePos < 0 ? 0
                                                   : 2;
-    motor_move(SPEED,SPEED-correction,direction);
+    motor_move(SPEED - correction, SPEED, direction);
   }
   else
   {
     correction = (correction < -maxCorrection) ? -maxCorrection : correction;
     int direction = linePos > 0 ? 1 : linePos < 0 ? 0
                                                   : 2;
-    motor_move(SPEED+correction,SPEED,direction);
+    motor_move(SPEED, SPEED + correction, direction);
   }
 
   Serial.print("line position: ");
   Serial.println(linePos);
 }
 
-/////////////////////////////// IR Functions 
+/////////////////////////////// IR Functions
 
 void initializeCNYSensors()
 {
-  for (int x = 0; x <= N_SENS; x++)
+  for (int x = 0; x <= NUM_OF_SENSORS; x++)
   {
     pinMode(SENSOR_UNO[x], INPUT);
   }
@@ -95,59 +95,63 @@ float getLinePosition(int color, int lastDir)
   // lastDir is 1 if line has a positive value and 0 if negative
 
   float line = 0;
-  int lineDetected = 0;
-  float sensorsScaled[N_SENS];
+  float sensorsScaled[NUM_OF_SENSORS];
   float wightedReadings = 0; // Average numerator
   float avgReadings = 0;     // Average denominator
 
-  int start = 0;
-
-  for (int i = 0; i < N_SENS; i++)
+  sensorShowsLine = 0b00000;
+  for (int i = 0; i < NUM_OF_SENSORS; i++)
   {
-    sensorShowsLine = 0b00000;
     int bitmask = 0b10000;
 
     sensorsScaled[i] = analogRead(SENSOR_UNO[i]) - sensorsMin[i];
 
-    sensorsScaled[i] *= R_SENS;
+    sensorsScaled[i] *= MAPPED_RANGE_SENSORS;
     sensorsScaled[i] /= (sensorsMax[i] - sensorsMin[i]); // Now readings values range from 0 to 1000
 
     Serial.print("sensor ");
     Serial.print(i);
     Serial.println(sensorsScaled[i]);
 
-    if (color == BLACK)
+    if (color == BLACK_LINE)
     {
-      sensorsScaled[i] = R_SENS - sensorsScaled[i]; // Reverse scale to have 1000 as pure black and 0 as pure white
+      sensorsScaled[i] = MAPPED_RANGE_SENSORS - sensorsScaled[i]; // Reverse scale to have 1000 as pure black and 0 as pure white
     }
 
-    if (sensorsScaled[i] >= (float)R_SENS * ((float)P_LINE_MIN / 100.0)) // At least one sensor has to detect a line
+    /*
+    if (sensorsScaled[i] >=960.0) // At least one sensor has to detect a line
     {
-      lineDetected = 1;
       sensorShowsLine |= bitmask;
     }
+    */
 
-    // startring point
-    // TODO motor team go ahead with maximum speed
-    if (sensorShowsLine == 0b01110)
+    if (sensorsScaled[i] >= (float)MAPPED_RANGE_SENSORS * ((float)BRIGHTNESS_LINE_MIN / 100.0)) // At least one sensor has to detect a line
     {
-      return 0;
-    }
-    // cross lines
-    // TODO motor team go ahead with average speed
-    // 2001 is a special case not in the range [-2000:2000]
-    if (sensorShowsLine == 0b11111)
-    {
-      return 2001;
+      sensorShowsLine |= bitmask;
     }
 
     wightedReadings += sensorsScaled[i] * i * WEIGHT_UNIT;
     avgReadings += sensorsScaled[i];
+    bitmask >>= 1;
   }
-  if (lineDetected == 1)
+
+  // startring point
+  // TODO motor team go ahead with maximum speed
+  if (sensorShowsLine == 0b01110)
   {
-    line = wightedReadings / avgReadings;           // Weighted average 0-4000
-    line = line - (WEIGHT_UNIT * (N_SENS - 1) / 2); // Change scale from 0 _ 4000 to -2000 _ 2000
+    return 0;
+  }
+
+  // cross lines
+  if (sensorShowsLine == 0b11111)
+  {
+    return 0;
+  }
+
+  if (sensorShowsLine > 0b00000)
+  {
+    line = wightedReadings / avgReadings;                   // Weighted average 0-4000
+    line = line - (WEIGHT_UNIT * (NUM_OF_SENSORS - 1) / 2); // Change scale from 0 _ 4000 to -2000 _ 2000
 
     // -2000 means the line exactly under the most left sensor
     // -1000 means the line exactly under the second from left sensor
@@ -157,8 +161,8 @@ float getLinePosition(int color, int lastDir)
   }
   else
   {
-    line = WEIGHT_UNIT * (N_SENS - 1) * lastDir;    // Use last direction to calculate error as the maximum value
-    line = line - (WEIGHT_UNIT * (N_SENS - 1) / 2); // Change scale
+    line = WEIGHT_UNIT * (NUM_OF_SENSORS - 1) * lastDir;    // Use last direction to calculate error as the maximum value
+    line = line - (WEIGHT_UNIT * (NUM_OF_SENSORS - 1) / 2); // Change scale
   }
 
   return line;
@@ -176,68 +180,85 @@ float getPIDCorrection(float line, float last_line, float kp, float kd, float ki
 
 /////////////////////////////////////////Motor functions
 
-void move_right_motor(int direction) 
+void move_right_motor(int direction)
 {
   // 1 forward, 0 backward, 2 stop
-  if(direction==1){
-      digitalWrite(HBRIDGE_IN1, HIGH);
-      digitalWrite(HBRIDGE_IN2, LOW);
+  if (direction == 1)
+  {
+    digitalWrite(HBRIDGE_IN1, HIGH);
+    digitalWrite(HBRIDGE_IN2, LOW);
   }
-  else if(direction==0){
-      digitalWrite(HBRIDGE_IN1, LOW);
-      digitalWrite(HBRIDGE_IN2, HIGH);
+  else if (direction == 0)
+  {
+    digitalWrite(HBRIDGE_IN1, LOW);
+    digitalWrite(HBRIDGE_IN2, HIGH);
   }
-  else{
-      digitalWrite(HBRIDGE_IN1, LOW);
-      digitalWrite(HBRIDGE_IN2, LOW);
+  else
+  {
+    digitalWrite(HBRIDGE_IN1, LOW);
+    digitalWrite(HBRIDGE_IN2, LOW);
   }
 }
-void move_left_motor(int direction) 
+void move_left_motor(int direction)
 {
   // 1 forward, 0 backward, 2 stop
-  if(direction==1){
-      digitalWrite(HBRIDGE_IN3, HIGH);
-      digitalWrite(HBRIDGE_IN4, LOW);
+  if (direction == 1)
+  {
+    digitalWrite(HBRIDGE_IN3, HIGH);
+    digitalWrite(HBRIDGE_IN4, LOW);
   }
-  else if(direction==1){
-      digitalWrite(HBRIDGE_IN3, LOW);
-      digitalWrite(HBRIDGE_IN4, HIGH);
+  else if (direction == 1)
+  {
+    digitalWrite(HBRIDGE_IN3, LOW);
+    digitalWrite(HBRIDGE_IN4, HIGH);
   }
-  else{
-      digitalWrite(HBRIDGE_IN3, LOW);
-      digitalWrite(HBRIDGE_IN4, LOW);
+  else
+  {
+    digitalWrite(HBRIDGE_IN3, LOW);
+    digitalWrite(HBRIDGE_IN4, LOW);
   }
 }
 //:)
 void motor_backward()
-{ 
+{
   // both Motors polarity should be backward
   digitalWrite(HBRIDGE_IN1, LOW);
   digitalWrite(HBRIDGE_IN2, HIGH);
-  
+
   digitalWrite(HBRIDGE_IN3, LOW);
   digitalWrite(HBRIDGE_IN4, HIGH);
 }
 
 void motor_move(int right_motor_speed, int left_motor_speed, int direction)
 {
-  // 1 turn right, 0 turn left, 2 forward, 3 stop 
-  if(direction==1){
+  // 1 turn right, 0 turn left, 2 forward, 3 stop
+  if (direction == 1)
+  {
     move_right_motor(0);
     move_left_motor(1);
   }
-  else if(direction==0){
+  else if (direction == 0)
+  {
     move_right_motor(1);
     move_left_motor(0);
   }
-  else if (direction ==2){
+  else if (direction == 2)
+  {
     move_right_motor(1);
     move_left_motor(1);
   }
-  else{
+  else
+  {
     move_right_motor(2);
     move_left_motor(2);
   }
+
+  // right_motor_speed = map(abs(right_motor_speed), 0, 1000, 0, 255);
+  // left_motor_speed = map(abs(left_motor_speed), 0, 1000, 0, 255);
+
+  // right_motor_speed = (right_motor_speed >= 0) ? right_motor_speed : 255 - right_motor_speed;
+  // left_motor_speed = (left_motor_speed > 0) ? 255 - left_motor_speed : left_motor_speed;
+
   // 0 <= Speed <= 255
   analogWrite(HBRIDGE_EN1, right_motor_speed);
   analogWrite(HBRIDGE_EN2, left_motor_speed);
