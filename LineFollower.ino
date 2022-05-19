@@ -1,15 +1,15 @@
 ////////////////////  IR Sensor Constants  ////////////////////
 
-#define NUM_OF_SENSORS 5          // Number of sensors
+#define NUM_OF_SENSORS 3       // Number of sensors
 #define MAPPED_RANGE_SENSORS 1000 // Sensor readings are mapped to this range
 #define WEIGHT_UNIT 1000          // Unit for weighted average
 
-const int SENSOR_UNO[NUM_OF_SENSORS] = {A4, A3, A2, A1, A0}; // Arduino pins
+const int SENSOR_UNO[NUM_OF_SENSORS] = { A3, A2, A1}; // Arduino pins
 float linePos = 0;
 float lastLinePos = 0;
 
-const float SPEED = 120;
-const float KP = .3;
+const float SPEED = 100;
+const float KP = .35;
 const float KD = .5;
 const float KI = 0;
 
@@ -80,7 +80,7 @@ float getLinePosition(int lastDir)
   // lastDir is 1 if line has a positive value and 0 if negative
 
   float line = 0;
-  float sensorsScaled[NUM_OF_SENSORS] = {0, 0, 0, 0, 0};
+  float sensorsScaled[NUM_OF_SENSORS] = {0, 0, 0};
   float wightedReadings = 0; // Average numerator
   float sumReadings = 0;     // Average denominator
   int lineDetected = 0;
