@@ -115,7 +115,7 @@ We have used the TCRT 5000 IR sensors, but since it is not supported in the simu
     <a href="https://github.com/BigFish2086" target="_black">
     <img src="https://avatars.githubusercontent.com/u/63132227?v=4" width="150px;" alt="Ahmed Mohamed Ibrahim"/>
     <br />
-    <sub><b>Ahmed Mohamed Ibrahim/b></sub></a>
+    <sub><b>Ahmed Mohamed Ibrahim</b></sub></a>
     </td>
   </tr>
  </table>
