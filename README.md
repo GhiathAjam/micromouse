@@ -49,42 +49,36 @@ We have used the TCRT 5000 IR sensors, but since it is not supported in the simu
     <br />
     <sub><b>Gheiath Ajam</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/Ziyadhassan" target="_black">
     <img src="https://avatars.githubusercontent.com/u/56728268?v=4" width="150px;" alt="Ziyad Hassan"/>
     <br />
     <sub><b>Ziyad Hassan</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/AhmedKhaled590" target="_black">
     <img src="https://avatars.githubusercontent.com/u/62337087?v=4" width="150px;" alt="Ahmed Khaled"/>
     <br />
     <sub><b>Ahmed Khaled</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/ahmed-8areeb" target="_black">
     <img src="https://avatars.githubusercontent.com/u/62256670?v=4" width="150px;" alt="Ahmed Ghareeb"/>
     <br />
     <sub><b>Ahmed Ghareeb</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/HazemAbdo" target="_black">
     <img src="https://avatars.githubusercontent.com/u/59124058?v=4" width="150px;" alt="Hazem Abdo"/>
     <br />
     <sub><b>Hazem Abdo</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/mhmdahmedfathi" target="_black">
     <img src="https://avatars.githubusercontent.com/u/52926511?v=4" width="150px;" alt="Mohamed Ahmed"/>
     <br />
     <sub><b>Mohamed Ahmed</b></sub></a>
     </td>
-
   </tr>
   <tr>
     <td align="center">
@@ -93,35 +87,30 @@ We have used the TCRT 5000 IR sensors, but since it is not supported in the simu
     <br />
     <sub><b>Maryam Salah</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/hoskillua" target="_black">
     <img src="https://avatars.githubusercontent.com/u/47090776?v=4" width="150px;" alt="Hossam Saeed"/>
     <br />
     <sub><b>Hossam Saeed</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/nadeenay" target="_black">
     <img src="https://avatars.githubusercontent.com/u/70846138?v=4" width="150px;" alt="Nadeen Ayman"/>
     <br />
     <sub><b>Nadeen Ayman</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/meryacine" target="_black">
     <img src="https://avatars.githubusercontent.com/u/56920956?v=4" width="150px;" alt="Omar Yacine"/>
     <br />
     <sub><b>Omar Yacine</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/AhmedMahmoudHafez" target="_black">
     <img src="https://avatars.githubusercontent.com/u/93212160?v=4" width="150px;" alt="Ahmed Hafez"/>
     <br />
     <sub><b>Ahmed Hafez</b></sub></a>
     </td>
-
     <td align="center">
     <a href="https://github.com/BigFish2086" target="_black">
     <img src="https://avatars.githubusercontent.com/u/63132227?v=4" width="150px;" alt="Ahmed Mohamed Ibrahim"/>
