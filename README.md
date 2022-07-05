@@ -1,9 +1,8 @@
-#  <h1 align="center"> Solvendo :checkered_flag:</h1> 
+#  <h1 align="center"> MicroMouse :checkered_flag:</h1> 
 ### An intelligent maze solving car 🧠🏎️
 
-Solvendo can solve a complex maze in the shortest amount of time while maintaining a decent velocity profile. It can accomplish this by utilising a combination of closed-loop controllers such as PID and a variety of conditions. It is able to tackle the line following problem using an array of infrared sensors and achieve the same results, That’s why it got its name **Solvendo** which means **solver in latin**.
+MicroMouse can solve a complex maze in the shortest amount of time while maintaining a decent velocity profile. It can accomplish this by utilising a combination of closed-loop controllers such as PID and a variety of conditions. It is able to tackle the line following problem using an array of infrared sensors and achieve the same results.
 
-![solvendo](https://user-images.githubusercontent.com/56788883/171511569-b5908b57-3a31-409e-95c1-dfc5824e10db.png)
 ## :computer: Code
 The code was written on the Atmega328P board. All low-level drivers were implemented by us, to achieve the best performance and the least code size.
 
@@ -13,8 +12,8 @@ The code was written on the Atmega328P board. All low-level drivers were impleme
 | Arduino Uno    | The main development board | 1      | [160 EGP](https://free-electronic.com/product/arduino-uno-r3-ch340-usb-cable/)                                               |
 | TCRT 5000      | The IR sensor              | 5      | [10 EGP](https://store.fut-electronics.com/products/tcrt5000-reflective-ir-sensor?_pos=1&_sid=65bee30f3&_ss=r)               |
 | Gearbox Motors | The used motors            | 2      | [25 EGP](https://store.fut-electronics.com/products/dc-geared-motors-for-robots-straight-shaft?_pos=33&_sid=eb26e25ca&_ss=r) |
-| Motor Driver   | The L298N H-bridge         | 1      | [70 EGP](https://store.fut-electronics.com/products/l298-dual-motor-driver-module-2a?_pos=16&_sid=eb26e25ca&_ss=r)           |
 | Car chassis    | Car’s Main body            | 1      | 190 EGP                                                                                                                      |
+| Motor Driver   | The L298N H-bridge         | 1      | [70 EGP](https://store.fut-electronics.com/products/l298-dual-motor-driver-module-2a?_pos=16&_sid=eb26e25ca&_ss=r)           |
 | Car batteries  | Lithium Rechargeable ones  | 3      | 35 EGP                                                                                                                       |
 | Battery Holder | To hold the batteries      | 1      | 15 EGP                                                                                                                       |
 
